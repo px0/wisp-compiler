@@ -12,12 +12,12 @@
     (.eval nashorn wisp-compiler-file)
     nashorn))
 
-(defn strip-exports
+(defn- strip-exports
   "wisp by default exports things to the 'exports' object - this causes trouble in the browser. Because wisp is written in wisp, there is no easy way to remove this from the compiler directly. It's a dirty hack, but ¯\\_(ツ)_/¯"
   [string]
   (str/replace string #"= exports\..+? =" "="))
 
-(defn wisp-compile-str
+(defn- wisp-compile-str
   ([expr mapping?]
    (-> (.invokeMethod ^Invocable wisp-engine
                       (.eval wisp-engine "global")
@@ -38,3 +38,10 @@
   foo('bar', theQux);\""
   [& forms]
   `(wisp-compile-str ~(apply str forms)))
+
+(defn wisp-runtime [] (-> (slurp (io/resource "wisp/runtime.js")) (strip-exports)))
+(defn wisp-sequence [] (-> (slurp (io/resource "wisp/sequence.js")) (strip-exports)))
+(defn wisp-string [] (-> (slurp (io/resource "wisp/string.js")) (strip-exports)))
+
+(defn wisp-includes []
+  (str (wisp-runtime) (wisp-sequence) (wisp-string)))

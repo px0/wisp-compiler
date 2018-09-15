@@ -23,7 +23,7 @@ This allows you to embed Clojure-flavoured JavaScript into your [hiccup](http://
 which will compile into
 ```html
 <div>
-    <button onclick="helloWorld()">Hello!</button>
+    <button onclick="helloWorld();">Hello!</button>
     <script>
         var helloWorld = function helloWorld() {
             return alert('' + 'Hello' + ' World!');
@@ -33,7 +33,13 @@ which will compile into
 ```
 
 # Advanced usage
-To use the more advanced wisp features, you'll need to include the runtim, the sequence and string libraries into the page. This should be possible by including the `resources/wisp/{runtime,sequence,string}.js` files into the page (in this order).
+To use the more advanced wisp features, you'll need to include the runtime, the sequence and string libraries into the page. This should be possible by including the `resources/wisp/{runtime,sequence,string}.js` files into the page (in this order).
+
+For caching reasons, you should probably just copy them into your `public` folder, but for convenience I am also exposing them as `wisp-runtime`, `wisp-sequence`, `wisp-string`, and altogether as `wisp-includes` functions that return these files as strings
+
+
+# Compiling wisp
+In the `resources/wisp` directory, run `make compiler` to re-compile the wisp compiler
 
 
 Copyright © 2018 Maximilian Gerlach
