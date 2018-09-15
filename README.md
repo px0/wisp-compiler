@@ -13,10 +13,24 @@ This allows you to embed Clojure-flavoured JavaScript into your EDN pages, e.g.:
 
 ```clojure
 (hiccup/html
-  [:html
-    [:button {:on-click (wisp-compile (alert (str "Hello " :World )))}
-      "Hello!"]
-    [:script (wisp-compile (console.log (+ 1 1)))]])
+  [:div
+    [:button "Hello!"]
+    [:script (wisp-compile
+      (defn hello-world []
+      (alert (str :Hello " World!"))))]])
+```
+
+which will compile into
+```html
+<div>
+    <button onclick="helloWorld()">Hello!</button>
+    <script>
+        var helloWorld = exports.helloWorld = function helloWorld() {
+            return alert('' + 'Hello' + ' World!');
+        };
+        //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFub255bW91cy53aXNwIl0sIm5hbWVzIjpbImhlbGxvV29ybGQiLCJleHBvcnRzIiwiYWxlcnQiXSwibWFwcGluZ3MiOiJBQUFBLElBQU1BLFVBQUEsR0FBQUMsT0FBQSxDQUFBRCxVQUFBLEdBQU4sU0FBTUEsVUFBTixHQUFxQjtBQUFBLGVBQUNFLEtBQUQsQyxZQUFPLEdBQVksU0FBbkI7QUFBQSxLQUFyQiIsInNvdXJjZXNDb250ZW50IjpbIihkZWZuIGhlbGxvLXdvcmxkIFtdIChhbGVydCAoc3RyIDpIZWxsbyBcIiBXb3JsZCFcIikpKSJdfQ==
+    </script>
+</div>
 ```
 
 # Advanced usage
