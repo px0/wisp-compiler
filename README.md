@@ -17,7 +17,7 @@ This allows you to embed Clojure-flavoured JavaScript into your EDN pages, e.g.:
     [:button "Hello!"]
     [:script (wisp-compile
       (defn hello-world []
-      (alert (str :Hello " World!"))))]])
+        (alert (str :Hello " World!"))))]])
 ```
 
 which will compile into
