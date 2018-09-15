@@ -11,7 +11,6 @@
     (.eval nashorn "var global = this;")
     (.eval nashorn wisp-compiler-file)
     nashorn))
-;;TODO  investigate {:no-map true}"
 
 (defn strip-exports
   "wisp by default exports things to the 'exports' object - this causes trouble in the browser. Because wisp is written in wisp, there is no easy way to remove this from the compiler directly. It's a dirty hack, but ¯\\_(ツ)_/¯"
@@ -28,17 +27,14 @@
   ([expr]
    (wisp-compile-str expr false)))
 
-(defmacro wisp-compile-form
-  [form]
-  `(wisp-compile-str ~(str form)))
-
 (defmacro wisp-compile
-  "Given a string or a form that is a correct wisp expression, returns the compiled JS output:
+  "Given forms that are correct wisp expressions, returns the compiled JS output:
 
-  (wisp-compile (foo :bar the-qux))
-  => \"foo('bar', theQux); \""
+  (wisp-compile
+    (def the-qux 23)
+    (foo :bar the-qux))
 
-  [body]
-  (if (string? body)
-    (wisp-compile-str body)
-    `(wisp-compile-form ~body)))
+  ;=> \"var theQux = 23;
+  foo('bar', theQux);\""
+  [& forms]
+  `(wisp-compile-str ~(apply str forms)))
