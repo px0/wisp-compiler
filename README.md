@@ -9,7 +9,7 @@ This lets you compile [wisp](https://gozala.github.io/wisp/) forms (or strings) 
 ```
 
 ## Why?
-This allows you to embed Clojure-flavoured JavaScript into your EDN pages, e.g.:
+This allows you to embed Clojure-flavoured JavaScript into your [hiccup](http://weavejester.github.io/hiccup/), pages, e.g.:
 
 ```clojure
 (hiccup/html
