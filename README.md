@@ -14,7 +14,7 @@ This allows you to embed Clojure-flavoured JavaScript into your EDN pages, e.g.:
 ```clojure
 (hiccup/html
   [:div
-    [:button "Hello!"]
+    [:button {:onclick "helloWorld()"} "Hello!"]
     [:script (wisp-compile
       (defn hello-world []
         (alert (str :Hello " World!"))))]])
