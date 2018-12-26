@@ -2,6 +2,8 @@
 
 This lets you compile [wisp](https://gozala.github.io/wisp/) forms (or strings) into Javascript
 
+[![Clojars Project](https://img.shields.io/clojars/v/wisp-compiler.svg)](https://clojars.org/wisp-compiler)
+
 ## Simple Usage
 ```clojure
   (wisp-compile (foo :bar the-qux))

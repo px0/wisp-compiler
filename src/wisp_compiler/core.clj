@@ -17,7 +17,7 @@
   [string]
   (str/replace string #"= exports\..+? =" "="))
 
-(defn- wisp-compile-str
+(defn wisp-compile-str
   ([expr mapping?]
    (-> (.invokeMethod ^Invocable wisp-engine
                       (.eval wisp-engine "global")
