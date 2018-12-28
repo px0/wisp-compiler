@@ -4,12 +4,6 @@ This lets you compile [wisp](https://gozala.github.io/wisp/) forms (or strings) 
 
 [![Clojars Project](https://img.shields.io/clojars/v/wisp-compiler.svg)](https://clojars.org/wisp-compiler)
 
-## Simple Usage
-```clojure
-  (wisp-compile (foo :bar the-qux))
-  ;=> "foo('bar', theQux);"
-```
-
 ## Why?
 This allows you to embed Clojure-flavoured JavaScript into your [hiccup](http://weavejester.github.io/hiccup/), pages, e.g.:
 
@@ -33,6 +27,24 @@ which will compile into
     </script>
 </div>
 ```
+
+## Okay, but show me something useful
+Compiling sexps into JavaScript is neat by itself, but sometimes you want to generate JavaScript dynamically on the server (e.g. for [Server-generated JavaScript Responses](https://signalvnoise.com/posts/3697-server-generated-javascript-responses)). In this case you may have held your nose and just concatenated a bunch of strings. Here is a snippet from one of my projects (don't judge:)
+
+```clj
+(c/javascript-response (str "var newEl = document.createElement('span'); newEl.innerText = 'Upvoted!';"
+                                "var el = document.getElementById(\"" commentid "\").querySelector(\"a.upvote\");"
+                                "if(el) el.replaceWith(newEl);")
+```
+
+With wisp, this can be rewritten like this:
+```clj
+```
+
+
+
+
+
 
 # Advanced usage
 To use the more advanced wisp features, you'll need to include the runtime, the sequence and string libraries into the page. This should be possible by including the `resources/wisp/{runtime,sequence,string}.js` files into the page (in this order).
