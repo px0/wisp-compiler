@@ -2,7 +2,7 @@
 
 This lets you compile [wisp](https://gozala.github.io/wisp/) forms (or strings) into Javascript
 
-[![Clojars Project](https://img.shields.io/clojars/v/wisp-compiler.svg)](https://clojars.org/wisp-compiler)
+[![Clojars Project](https://img.shields.io/clojars/v/px0/wisp-compiler.svg)](https://clojars.org/px0/wisp-compiler)
 
 ## Why?
 This allows you to embed Clojure-flavoured JavaScript into your [hiccup](http://weavejester.github.io/hiccup/), pages, e.g.:
