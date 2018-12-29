@@ -1,4 +1,4 @@
-(defproject px0/wisp-compiler "0.3.1"
+(defproject px0/wisp-compiler "0.3.2"
   :description "Compile wisp expressions to JavaScript in your Clojure project!"
   :url "https://github.com/px0/wisp-compiler"
   :license {:name "Eclipse Public License"
