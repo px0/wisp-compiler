@@ -33,7 +33,7 @@
 (defmacro evaluate-forms
   "Given forms that are correct wisp expressions, returns the compiled JS output:
 
-  (wisp-compile
+  (evaluate-forms
     (def the-qux 23)
     (foo :bar the-qux))
 
@@ -49,7 +49,7 @@
   "This partially evaluates expressions in the given wisp forms. You will want
   this if you want to pass arguments to the generated javascript. For example:
 
-  (wisp-compile-bind [comment-id \"comment-123\"]
+  (compile [comment-id \"comment-123\"]
     (let [add-class (fn [el class-name]
                       (.add (.-classList el) class-name))]
       (add-class (document.getElementById comment-id) \"hidden\")))
@@ -61,7 +61,10 @@
         return el.classList.add(className);
     };
     return addClassø1(document.getElementById('comment-123'), 'hidden');
-  }.call(this)); "
+  }.call(this));
+
+  Note that the symbol resolution is symbol-based and dumb, so if you're
+  shadowing a variable in a nested scope or something, things will likely break."
 
   [bindings & forms]
   (let [bindings-map   (->> (partition 2 bindings)

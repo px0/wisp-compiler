@@ -44,13 +44,13 @@ Compiling sexps into JavaScript is neat by itself, but sometimes you want to gen
 With wisp, this can (and should!) be rewritten like this:
 ```clj
 (defn upvote-comment [cid]
-  (wisp/compile [commentid cid]
-      (let [new-el (document.createElement "span")
-            el     (document.getElementById commentid)
-            upvote (.querySelector el "a.upvote")]
-        (if el
-          (el.replaceWith new-el)))))
-
+  (javascript-reponse
+    (wisp/compile [commentid cid]
+        (let [new-el (document.createElement "span")
+              el     (document.getElementById commentid)
+              upvote (.querySelector el "a.upvote")]
+          (if el
+            (el.replaceWith new-el))))))
 ```
 
 Which will result in JavaScript like this:
@@ -66,14 +66,16 @@ Which will result in JavaScript like this:
 }.call(this));
 ```
 
-
+As you can see, the symbols referenced in the initial binding vector get automatically evaluated and inserted into the expression. This way you can not only write your JavaScript with sweet, sweet parentheses, you will also get the sexps syntax-highlighted, and you don't have to mess around with string manipulation!
 
 
 # Advanced usage
-To use the more advanced wisp features, you'll need to include the runtime, the sequence and string libraries into the page. This should be possible by including the `resources/wisp/{runtime,sequence,string}.js` files into the page (in this order).
+To use the more advanced Wisp features, you'll need to include the runtime, the sequence and string libraries into the page. This should be possible by including the `resources/wisp/{runtime,sequence,string}.js` files into the page (in this order).
 
 For caching reasons, you should probably just copy them into your `public` folder, but for convenience I am also exposing them as `wisp-runtime`, `wisp-sequence`, `wisp-string`, and altogether as `wisp-includes` functions that return these files as strings
 
+# Gotchas
+The symbol of the resolution of the `compile` macro is dumb and will replace the given symbol with its value no matter where in the source code it is. So if you expect to be able to shadow bindings in a nested scope somewhere, it will most likely break. This is for short snippets, and you are very much responsible for reading them after compilation and making sure they work. Don't blame me if your code reaks!
 
 # Compiling wisp
 In the `resources/wisp` directory, run `make compiler` to re-compile the wisp compiler
