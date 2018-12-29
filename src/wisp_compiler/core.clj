@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.walk :as walk])
+  (:refer-clojure :exclude [compile])
   (:import [javax.script ScriptEngineManager Invocable]))
 
 (def wisp-compiler-file (slurp (io/resource "wisp/dist/wispcompiler.min.js")))
@@ -14,11 +15,11 @@
     nashorn))
 
 (defn- strip-exports
-  "wisp by default exports things to the 'exports' object - this causes trouble in the browser. Because wisp is written in wisp, there is no easy way to remove this from the compiler directly. It's a dirty hack, but ¯\_(ツ)_/¯"
+  "wisp by default exports things to the 'exports' object - this causes trouble in the browser. Because wisp is written in wisp, there is no easy way to remove this from the compiler directly. It's a dirty hack, but ¯\\_(ツ)_/¯"
   [string]
   (str/replace string #"= exports\..+? =" "="))
 
-(defn wisp-compile-str
+(defn evaluate-str
   "Compile a wisp expression string into Javascript. The source-mapping? argument defines whether or not the JS will include mapping data to the wisp expression."
   ([expr source-mapping?]
    (-> (.invokeMethod ^Invocable wisp-engine
@@ -29,7 +30,7 @@
   ([expr]
    (wisp-compile-str expr false)))
 
-(defmacro wisp-compile
+(defmacro evaluate-forms
   "Given forms that are correct wisp expressions, returns the compiled JS output:
 
   (wisp-compile
@@ -39,12 +40,12 @@
   ;=> \"var theQux = 23;
   foo('bar', theQux);\"
 
-  Note that this does not evaluate any forms inside the expressions. If you need this, use `wisp-compile-bind`
+  Note that this does not evaluate any forms inside the expressions. If you need this, use `compile`
   "
   [& forms]
-  `(wisp-compile-str ~(apply str forms)))
+  `(evaluate-str ~(apply str forms)))
 
-(defmacro wisp-compile-bind
+(defmacro compile
   "This partially evaluates expressions in the given wisp forms. You will want
   this if you want to pass arguments to the generated javascript. For example:
 
@@ -63,10 +64,13 @@
   }.call(this)); "
 
   [bindings & forms]
-  (let [evaled-bindings      (mapv (fn [[k v]] [k (eval v)]) (partition 2 bindings))
-        binding-map          (into {} evaled-bindings)
-        replaced-forms       (walk/postwalk-replace binding-map forms)]
-    `(wisp-compile-str ~(apply str replaced-forms))))
+  (let [bindings-map   (->> (partition 2 bindings)
+                            (mapv (fn [[k v]]
+                                    [(list 'quote k) v]))
+                            (into {}))
+        bound-forms    `(walk/postwalk-replace ~bindings-map ~(list 'quote forms))
+        wisp-forms-str `(apply str ~bound-forms)]
+    (list `evaluate-str wisp-forms-str)))
 
 (defn wisp-runtime [] (-> (slurp (io/resource "wisp/runtime.js")) (strip-exports)))
 (defn wisp-sequence [] (-> (slurp (io/resource "wisp/sequence.js")) (strip-exports)))
@@ -75,10 +79,11 @@
 (defn wisp-includes []
   (str (wisp-runtime) (wisp-sequence) (wisp-string)))
 
-(let [comment-id "aasdfsadfassdf"]
-  (wisp-compile-bind [commentid comment-id]
-                     (let [new-el (document.createElement "span")
-                           el     (document.getElementById commentid)
-                           upvote (.querySelector el "a.upvote")]
-                       (if el
-                         (el.replaceWith new-el)))))
+
+(defmacro ^:deprecated wisp-compile [& args]
+  "Please see the docstring for `evaluate`"
+  `(evaluate-forms ~@args))
+
+(defmacro ^:deprecated wisp-compile-str [& args]
+  "Please see the dring for `evaluate-str`"
+  `(evaluate-str ~@args))

@@ -1,21 +1,38 @@
 (ns wisp-compiler.core-test
   (:require [clojure.test :refer :all]
-            [wisp-compiler.core :refer :all]
+            [wisp-compiler.core :as wisp]
             [clojure.string :as str]))
 
+(deftest deprected-str-test
+  (let [js (wisp/wisp-compile "(+ 1 1)")]
+    (is (str/starts-with? js "1 + 1;"))))
+
+(deftest deprecated-form-test
+  (let [js (wisp/wisp-compile (+ 1 1))]
+    (is (str/starts-with? js "1 + 1;"))))
+
 (deftest str-test
-  (let [js (wisp-compile "(+ 1 1)")]
+  (let [js (wisp/evaluate-str "(+ 1 1)")]
     (is (str/starts-with? js "1 + 1;"))))
 
 (deftest form-test
-  (let [js (wisp-compile (+ 1 1))]
+  (let [js (wisp/evaluate-forms (+ 1 1))]
     (is (str/starts-with? js "1 + 1;"))))
 
-(deftest binding-test
-  (let [js (wisp-compile-bind [comment-id "comment-123"]
-                              (let [add-class (fn [el class-name]
-                                                (.add (.-classList el) class-name))])
-                              (add-class (document.getElementById comment-id) "hidden"))]
+(deftest no-binding-test
+  (let [js (wisp/compile [] (+ x 5 z))]
+    (is (str/starts-with? js "x + 5 + z;"))))
 
-    (is (= js "(function () {\n    var addClassø1 = function (el, className) {\n        return el.classList.add(className);\n    };\n    return void 0;\n}.call(this));\naddClass(document.getElementById('comment-123'), 'hidden');"
-          ))))
+(deftest simple-binding-test
+  (let [js (wisp/compile [x 23]
+                        (+ x 5 z))]
+    (is (str/starts-with? js "23 + 5 + z;"))))
+
+(deftest stronger-binding-test
+  (let [comment-id-from-elsewhere "comment-123"]
+    (let [js (wisp/compile [comment-id comment-id-from-elsewhere]
+                           (let [add-class (fn [el class-name]
+                                             (.add (.-classList el) class-name))])
+                           (add-class (document.getElementById comment-id) "hidden"))]
+
+      (is (= js "(function () {\n    var addClassø1 = function (el, className) {\n        return el.classList.add(className);\n    };\n    return void 0;\n}.call(this));\naddClass(document.getElementById('comment-123'), 'hidden');")))))
