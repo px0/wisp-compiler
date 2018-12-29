@@ -28,7 +28,7 @@
                       (object-array [expr source-mapping?]))
        (strip-exports)))
   ([expr]
-   (wisp-compile-str expr false)))
+   (evaluate-str expr false)))
 
 (defmacro evaluate-forms
   "Given forms that are correct wisp expressions, returns the compiled JS output:
