@@ -49,10 +49,10 @@ addClass(document.getElementById('comment-123'), 'hidden');")))))
 
 (deftest real-life-complex-binding-test
   (let [comment-id-from-elsewhere "comment-123"
-        some-class "hidden"]
+        some-class                "hidden"]
     (let [js (wisp/compile [comment-id comment-id-from-elsewhere
                             the-class some-class]
-                           (let [add-class (fn [el class-name]
-                                             (.add (.-classList el) class-name))])
-                           (add-class (document.getElementById comment-id) the-class))]
+               (let [add-class (fn [el class-name]
+                                 (.add (.-classList el) class-name))])
+               (add-class (document.getElementById comment-id) the-class))]
       (is (= js "(function () {\n    var addClassø1 = function (el, className) {\n        return el.classList.add(className);\n    };\n    return void 0;\n}.call(this));\naddClass(document.getElementById('comment-123'), 'hidden');")))))

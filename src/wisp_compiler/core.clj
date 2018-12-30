@@ -66,6 +66,7 @@
   Note that the symbol resolution is symbol-based and dumb, so if you're
   shadowing a variable in a nested scope or something, things will likely break."
 
+  {:style/indent 1}
   [bindings & forms]
   (let [bindings-map   (->> (partition 2 bindings)
                             (mapv (fn [[k v]]
